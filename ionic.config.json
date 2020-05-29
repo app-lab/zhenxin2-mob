@@ -1,5 +1,7 @@
 {
   "name": "zhenxin2-mob",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }

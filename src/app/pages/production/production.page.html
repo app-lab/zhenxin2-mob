@@ -1,0 +1,124 @@
+<ion-header>
+    <ion-toolbar color="secondary" mode="ios">
+        <ion-buttons slot="secondary" (click)="goback()">
+            <ion-button>
+                <ion-icon slot="icon-only" name="arrow-back" mode="ios"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>工单详情</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div id="content-main">
+        <div id="content-left">
+            <div id="content-left-top">
+              <div>
+                <mat-label>{{station?.stationName}}</mat-label>
+                -------
+                <mat-form-field>
+                  <mat-label>工序</mat-label>
+                  <mat-select [(value)]="selectedCity" (selectionChange)="cityChange($event)">
+                    <mat-option *ngFor="let city of cityData[station?.id]" [value]=city.id>{{city.procedureName}}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+              <div style="margin-top: 16px;">
+                <button mat-raised-button  color="accent" (click)="goin()" style="margin-right: 20px;">进站</button>
+                <button mat-raised-button color="primary" (click)="goout()">出站</button>
+              </div>
+            </div>
+            <div id="content-left-tip">
+              <mat-toolbar color="accent" style="height: 10px;">
+                <mat-toolbar-row>
+                  <span>操作指导--可选设备和程序号</span>
+                  <span class="example-spacer"></span>
+                  <mat-icon class="example-icon">verified_user</mat-icon>
+                </mat-toolbar-row>
+              </mat-toolbar>
+              <table mat-table [dataSource]="tipDataSource" class="mat-elevation-z8">
+                <!-- Position Column -->
+                <ng-container matColumnDef="equipmentCode">
+                  <th mat-header-cell *matHeaderCellDef>设备编码</th>
+                  <td mat-cell *matCellDef="let element"> {{element.equipmentCode}} </td>
+                </ng-container>
+              
+                <!-- Name Column -->
+                <ng-container matColumnDef="equipmentName">
+                  <th mat-header-cell *matHeaderCellDef>设备名</th>
+                  <td mat-cell *matCellDef="let element"> {{element.equipmentName}} </td>
+                </ng-container>
+              
+                <!-- Weight Column -->
+                <ng-container matColumnDef="programList">
+                  <th mat-header-cell *matHeaderCellDef>程序号</th>
+                  <td mat-cell *matCellDef="let element"> 
+                    <mat-chip color="accent" selected *ngFor="let theitem of element.programList">{{theitem.name}} </mat-chip>
+                  </td>
+                </ng-container>
+              
+                <tr mat-header-row *matHeaderRowDef="tipDisplayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: tipDisplayedColumns;"></tr>
+              </table>
+
+            </div>
+            <div id="content-left-bottom"></div>
+        </div>
+        <div id="content-right">
+            <mat-tab-group mat-align-tabs="center" (selectedTabChange)="changeinout($event)">
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <mat-icon style="color: red;">transfer_within_a_station</mat-icon> 
+                    未进站{{innum}}
+                  </ng-template>
+                </mat-tab>
+                <mat-tab>
+                  <ng-template mat-tab-label>
+                    <mat-icon style="color: blue;">directions_run</mat-icon>
+                    已进站{{outnum}}
+                  </ng-template>
+                </mat-tab>
+              </mat-tab-group>
+              <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="select">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+                    </mat-checkbox>
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+                    </mat-checkbox>
+                  </td>
+                </ng-container>
+              
+                <!-- Position Column -->
+                <ng-container matColumnDef="productCode">
+                  <th mat-header-cell *matHeaderCellDef> 片号 </th>
+                  <td mat-cell *matCellDef="let element"> {{element.productCode}} </td>
+                </ng-container>
+              
+                <!-- Name Column -->
+                <ng-container matColumnDef="woId">
+                  <th mat-header-cell *matHeaderCellDef>所属工单</th>
+                  <td mat-cell *matCellDef="let element"> {{element.woId}} </td>
+                </ng-container>
+              
+                <!-- Weight Column -->
+                <ng-container matColumnDef="productName">
+                  <th mat-header-cell *matHeaderCellDef>产品</th>
+                  <td mat-cell *matCellDef="let element"> {{element.productName}} </td>
+                </ng-container>
+              
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    (click)="selection.toggle(row)">
+                </tr>
+              </table>
+              
+        </div>
+    </div>
+</ion-content>
+

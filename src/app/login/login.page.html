@@ -1,0 +1,27 @@
+<div class="bounds">
+  <div class="content" fxLayout="row" fxLayout.xs="column" fxFlexFill>
+    <div fxFlex="50" class="sec1" fxFlex.xs="35">
+      <ng-lottie [options]="options" (animationCreated)="animationCreated($event)"></ng-lottie>
+    </div>
+    <div fxFlex="50" class="sec2" fxFlex.xs="65">
+      <form fxLayout="column" fxLayoutAlign="center center" fxLayoutAlign.xs="start center" style="height: 100vh;">
+        <h2>木白智造</h2>
+        <mat-form-field appearance="outline">
+          <mat-label>用户名</mat-label>
+          <input matInput placeholder="请输入用户名" [formControl]="userName">
+          <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+          <mat-error *ngIf="userName.invalid">请输入用户名</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>密码</mat-label>
+          <input matInput placeholder="请输入密码" [formControl]="password" [type]="hide ? 'password' : 'text'">
+          <mat-icon matSuffix (click)="hide = !hide">{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+          <mat-error *ngIf="password.invalid">请输入密码</mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="login()">登录</button>
+      </form>
+      </div>
+    </div>
+  </div>
+
+
