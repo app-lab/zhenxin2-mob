@@ -73,8 +73,6 @@ export class WorkorderPage implements OnInit, OnDestroy {
     this.name$ = this.store.select(getName);
     var stationstr: string = localStorage.getItem('stationlist')
     this.store.select(getAllStop).subscribe(res => {
-      console.log(66777)
-      console.log(res.length)
       if (res.length) {
         this.stopids = [...res]
         this.everytime(this.stopids)
@@ -103,7 +101,6 @@ export class WorkorderPage implements OnInit, OnDestroy {
 
   // 筛选优先级
   priorityChange(data) {
-    console.log(data)
     let showworkorderListData: NewPlan[]= this.workorderListData.filter((item) => {
         return item.priority === data.value
     })
@@ -113,8 +110,6 @@ export class WorkorderPage implements OnInit, OnDestroy {
   // 根据关闭设备--获取相工位
   everytime(data: number[]) {
     this.apiServer.getTokenTwo('basicdata/private/station/getStationsByEquipmentIds/', data.join('^')).subscribe((res) => {
-      console.log(111222)
-      console.log(res)
       if (res.result.length) {
         this.stopEquipment = res.result;
         this.giveTip()
@@ -198,7 +193,6 @@ export class WorkorderPage implements OnInit, OnDestroy {
   }
 
   async buildCity(data: string, mylist: Procedure[]) {
-    console.log(data)
     this.cityData = {}
     await data.split('^').forEach(element => {
       this.cityData[+element] = []
@@ -211,7 +205,6 @@ export class WorkorderPage implements OnInit, OnDestroy {
   }
 
   goproduce(data) {
-    console.log(data)
     if (this.selectedCity) {
       localStorage.setItem('workorderData', JSON.stringify(data))
       this.router.navigate(['/production'])
