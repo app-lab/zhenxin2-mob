@@ -17,8 +17,6 @@ export class MywebsocketService {
 
   allequipment() {
     this.socket.on('allequipment', (res) => {
-      console.log(7777888)
-      console.log(res)
       this.stopids = res.map(item => item.id).map(Number)
       this.store.dispatch(new AddAllStop({ allstop: [...this.stopids] }))
     })
@@ -26,8 +24,6 @@ export class MywebsocketService {
 
   updateequipment() {
     this.socket.on('updateequipment', (res) => {
-      console.log(7777888)
-      console.log(res)
       if (!res.status) {
         this.stopids = [...this.stopids, res.id]
       } else {

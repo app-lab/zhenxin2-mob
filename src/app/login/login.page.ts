@@ -37,11 +37,8 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   login() {
-    console.log(this.userName.value)
-    console.log(this.password.value)
     if (this.userName.value && this.password.value) {
       this.apiServer.post('authority/public/login', { userName: this.userName.value, password: this.password.value }).subscribe(res => {
-        console.log(res)
         if(!res.errorCode) {
           var authority: number[] = res.result.authority.split(',').map(Number)
           if (authority.includes(4000) || authority.includes(4001)) {

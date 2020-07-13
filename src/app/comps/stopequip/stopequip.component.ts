@@ -21,7 +21,6 @@ export class StopequipComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(5555)
    this.dataSource = this.mystopEquipment
   }
 
