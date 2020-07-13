@@ -9,7 +9,10 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "aa": "ionic cordova platform add android",
+    "build:a": "ionic cordova build android --prod --debug --aot --env=prod",
+    "build:r": "ionic cordova build android --release"
   },
   "private": true,
   "dependencies": {
