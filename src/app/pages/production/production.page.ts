@@ -7,7 +7,7 @@ import { Procedure } from 'src/app/models/Procedure.model';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Station } from 'src/app/models/Station.model';
-import { Store} from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { State, getProcesses } from 'src/app/reducers';
 import { EquipmentNumber } from 'src/app/models/equipmentnumber.model';
 import { ApiService } from 'src/app/service/api.service';
@@ -33,19 +33,20 @@ export class ProductionPage implements OnInit {
   selectedCity: number = null; // 当前工序
   unCheckInPppListData: ProductionProcessProductDetail[] = []
   doCheckInPppListData: ProductionProcessProductDetail[] = []
-
-  displayedColumns: string[] = ['select','productCode', 'woId', 'productName'];
-  tipDisplayedColumns: string[] = ['equipmentCode','equipmentName', 'programList'];
+  selectedProgram: any = null
+  displayedColumns: string[] = ['select', 'productCode', 'woId', 'productName'];
+  tipDisplayedColumns: string[] = ['equipmentCode', 'equipmentName', 'programList'];
   dataSource: MatTableDataSource<ProductionProcessProductDetail> = new MatTableDataSource<ProductionProcessProductDetail>([]);
   tipDataSource: MatTableDataSource<EquipmentNumber> = new MatTableDataSource<EquipmentNumber>([]);
+  equipmentList: any[] = []
   selection = new SelectionModel<ProductionProcessProductDetail>(true, []);
 
-  constructor(public apiServer: ApiService, public inoutService: InoutService, private store: Store<State>,) {
+  constructor(public apiServer: ApiService, public inoutService: InoutService, private store: Store<State>, ) {
     this.procedure = JSON.parse(localStorage.getItem('procedure'))
     this.selectedCity = this.procedure.id
     this.station = JSON.parse(localStorage.getItem('station'))
     this.workorderData = JSON.parse(localStorage.getItem('workorderData'))
-   }
+  }
 
   ngOnInit() {
 
@@ -55,17 +56,15 @@ export class ProductionPage implements OnInit {
     this.unCheckInPppGetList()
     this.doCheckInPppGetList()
     this.store.select(getProcesses).subscribe(res => {
-      console.log(res)
-      this.cityData = res 
+      this.cityData = res
     });
     this.whichnum()
   }
 
   whichnum() {
-    this.apiServer.getToken('basicdata/private/program/getEquipmentAndProgramList',{procedureId: this.procedure.id, stationId: this.station.id, woId: this.workorderData.id}).subscribe((res) => {
-        console.log(555555)
-        console.log(res)
-        this.tipDataSource = new MatTableDataSource<EquipmentNumber>(res.result);
+    this.apiServer.getToken('basicdata/private/program/getEquipmentAndProgramList', { procedureId: this.procedure.id, stationId: this.station.id, woId: this.workorderData.id }).subscribe((res) => {
+      this.tipDataSource = new MatTableDataSource<EquipmentNumber>(res.result);
+      this.equipmentList = res.result
     })
   }
 
@@ -78,8 +77,7 @@ export class ProductionPage implements OnInit {
   }
 
   unCheckInPppGetList(): void {
-    this.apiServer.getToken('production/private/ppp',{ page: 1, limit: 50000, status: 0, procedureId: this.procedure.id, woId: this.workorderData.id}).subscribe(res => {
-      console.log(res)
+    this.apiServer.getToken('production/private/ppp', { page: 1, limit: 50000, status: 0, procedureId: this.procedure.id, woId: this.workorderData.id }).subscribe(res => {
       this.innum = res.result.totalElements
       this.unCheckInPppListData = res.result.content
       this.buildDataSource()
@@ -87,7 +85,7 @@ export class ProductionPage implements OnInit {
   }
 
   doCheckInPppGetList(): void {
-    this.apiServer.getToken('production/private/ppp',{ page: 1, limit: 50000, status: 1, procedureId: this.procedure.id, woId: this.workorderData.id }).subscribe(res => {
+    this.apiServer.getToken('production/private/ppp', { page: 1, limit: 50000, status: 1, procedureId: this.procedure.id, woId: this.workorderData.id }).subscribe(res => {
       this.outnum = res.result.totalElements
       this.doCheckInPppListData = res.result.content
       this.buildDataSource()
@@ -95,18 +93,20 @@ export class ProductionPage implements OnInit {
   }
 
   buildDataSource() {
-    if(this.mynum === 0) {
+    if (this.mynum === 0) {
       this.dataSource = new MatTableDataSource<ProductionProcessProductDetail>(this.unCheckInPppListData);
-    } else if(this.mynum === 1) {
+    } else if (this.mynum === 1) {
       this.dataSource = new MatTableDataSource<ProductionProcessProductDetail>(this.doCheckInPppListData);
     }
   }
 
   // 进站
   goin() {
-    console.log(this.selection.selected)
+    if (!this.selectedProgram) {
+      return
+    }
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
-    this.inoutService.post('production/private/productionExcute/checkIn', {userInfo: userInfo, procedureInfo: this.procedure,stationInfo: this.station,productInfo: this.selection.selected, woId: [this.workorderData.id]}).subscribe((res) => {
+    this.inoutService.post('production/private/productionExcute/checkIn', { userInfo: userInfo, procedureInfo: this.procedure, stationInfo: this.station, productInfo: this.selection.selected, woId: [this.workorderData.id], programNumberInfo: this.selectedProgram, }).subscribe((res) => {
       this.selection.clear()
       this.unCheckInPppGetList()
       this.doCheckInPppGetList()
@@ -116,7 +116,7 @@ export class ProductionPage implements OnInit {
   // 出站
   goout() {
     let userInfo = JSON.parse(localStorage.getItem('userInfo'))
-    this.inoutService.post('production/private/productionExcute/checkOut', {userInfo: userInfo, procedureInfo: this.procedure,stationInfo: this.station,productInfo: this.selection.selected, woId: [this.workorderData.id]}).subscribe((res) => {
+    this.inoutService.post('production/private/productionExcute/checkOut', { userInfo: userInfo, procedureInfo: this.procedure, stationInfo: this.station, productInfo: this.selection.selected, woId: [this.workorderData.id] }).subscribe((res) => {
       this.selection.clear()
       this.unCheckInPppGetList()
       this.doCheckInPppGetList()
@@ -129,7 +129,6 @@ export class ProductionPage implements OnInit {
 
   changeinout(data) {
     this.selection.clear()
-    console.log(data.index)
     this.mynum = data.index
     this.buildDataSource()
   }
@@ -144,8 +143,8 @@ export class ProductionPage implements OnInit {
   /** Selects all rows if they are not all selected; otherwise clear selection. */
   masterToggle() {
     this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
+      this.selection.clear() :
+      this.dataSource.data.forEach(row => this.selection.select(row));
   }
 
   /** The label for the checkbox on the passed row */
@@ -156,4 +155,7 @@ export class ProductionPage implements OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
   }
 
+  selectedProgramChange(e: any) {
+    this.selectedProgram = e.value
+  }
 }
